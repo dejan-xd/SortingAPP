@@ -10,3 +10,28 @@
     display: inline-block;
     margin: 0 1px;
 }
+
+.btn {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 15px 5px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.btn-gray {
+    background-color: #555555;
+    color: white;
+    border: 2px solid #555555;
+  }
+  
+.btn-gray:hover {
+    background-color: white;
+    color: #555555;
+}
