@@ -1,5 +1,6 @@
 import React from 'react';
-import {mergeSort} from '../SortingAlgorithms/MergeSort.js'
+import {mergeSort} from '../SortingAlgorithms/MergeSort.js';
+import { quickSort } from '../SortingAlgorithms/QuickSort.js';
 import './SortingVisualizer.css';
 
 const ANIMATION_SPEED_MS = 1;   // speed of the animation
@@ -80,7 +81,45 @@ export default class SortingVisualizer extends React.Component {
     // console.log(arraysAreEqual(javaScriptSortedArray, sortedArray));
   }
 
-  quickSort() {}    // TODO
+  quickSort() {
+    if (this.isSorting) return
+
+    this.isSorting = true;
+    const [animations, array] = quickSort(this.state.array);
+
+    for (let i = 0; i < animations.length; i++) {
+      const arrayBars = document.getElementsByClassName('array-bar');
+      const [barOneIdx, barTwoIdx] = animations[i]; 
+      const barOneStyle = arrayBars[barOneIdx].style;
+      const barTwoStyle = arrayBars[barTwoIdx].style;
+
+      if (animations[i][2] === 'color') {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.CHECKING;
+          barTwoStyle.backgroundColor = COLORS.CHECKING;
+        }, i * ANIMATION_SPEED_MS);
+      } else if (animations[i][2] === 'revert') {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.INITIAL;
+          barTwoStyle.backgroundColor = COLORS.INITIAL;
+        }, i * ANIMATION_SPEED_MS);
+      } else {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.PROCESSING;
+          barTwoStyle.backgroundColor = COLORS.PROCESSING;
+          const tempHeight = barOneStyle.height;
+          barOneStyle.height = barTwoStyle.height;
+          barTwoStyle.height = tempHeight;
+        }, i * ANIMATION_SPEED_MS);
+      }
+    }
+
+    setTimeout(() => {
+      this.isSorting = false;
+      this.setState({array});
+    }, (animations.length + 1) * ANIMATION_SPEED_MS);
+  }
+
   heapSort() {}   // TODO
   bubbleSort() {}   // TODO
 
