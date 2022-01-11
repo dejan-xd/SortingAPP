@@ -1,6 +1,8 @@
 import React from 'react';
 import { mergeSort } from '../SortingAlgorithms/MergeSort.js';
-import { quickSort, swap } from '../SortingAlgorithms/QuickSort.js';
+import { quickSort } from '../SortingAlgorithms/QuickSort.js';
+import { randomIntFromInterval, arrayBarColoring, shuffle } from '../Utils/Utils.js';
+
 import './SortingVisualizer.css';
 
 const ANIMATION_SPEED_MS = 1;   // speed of the animation
@@ -21,6 +23,12 @@ export default class SortingVisualizer extends React.Component {
 			array: []
 		};
     this.isSorting = false;
+
+    // TODO add pop up window with a notification
+    // TODO check if list is already sorted
+    // const javaScriptSortedArray = this.state.array.slice().sort((a, b) => a - b);
+    // const sortedArray = this.state.array;
+    // console.log(arraysAreEqual(javaScriptSortedArray, sortedArray));
 	}
 
 	componentDidMount() {
@@ -51,13 +59,11 @@ export default class SortingVisualizer extends React.Component {
     for (let i = 0; i < animations.length; i++) {
       const arrayBars = document.getElementsByClassName('array-bar');
       const isColorChange = i % 3 !== 2;
-
       if (isColorChange) {
         const [barOneIdx, barTwoIdx] = animations[i]; 
         const barOneStyle = arrayBars[barOneIdx].style;
         const barTwoStyle = arrayBars[barTwoIdx].style;
         const color = i % 3 === 0 ? COLORS.CHECKING : COLORS.PROCESSING;
-
         setTimeout(() => {
           barOneStyle.backgroundColor = color;
           barTwoStyle.backgroundColor = color;
@@ -75,12 +81,6 @@ export default class SortingVisualizer extends React.Component {
       this.isSorting = false;
       arrayBarColoring('array-bar', COLORS.FINISHED)
     }, (animations.length + 1) * ANIMATION_SPEED_MS);
-
-    // TODO add pop up window with a notification
-    // TODO check if list is already sorted
-    // const javaScriptSortedArray = this.state.array.slice().sort((a, b) => a - b);
-    // const sortedArray = this.state.array;
-    // console.log(arraysAreEqual(javaScriptSortedArray, sortedArray));
   }
 
   quickSort() {
@@ -146,37 +146,3 @@ export default class SortingVisualizer extends React.Component {
 		);
 	}
 }
-
-function randomIntFromInterval(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-function arrayBarColoring(className, color) {
-  const arrayBars = document.getElementsByClassName(className);
-
-  for(var i = 0; i < arrayBars.length; i++){
-    arrayBars[i].style.backgroundColor = color;
-  }
-}
-
-function shuffle(array) {
-  let currentIndex = array.length, randomIndex;
-
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    swap(array, currentIndex, randomIndex);
-  }
-  return array;
-}
-
-// function arraysAreEqual(firstArray, secondArray) {
-//   if (firstArray.length !== secondArray.length) return false;
-
-//   for (let i = 0; i < firstArray.length; i++) {
-//     if (firstArray[i] !== secondArray[i]) return false;
-//   }
-  
-//   return true;
-// }

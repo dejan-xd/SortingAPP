@@ -1,5 +1,8 @@
+import { swap } from '../Utils/Utils.js';
+
 export function quickSort(array) {
     if (array.length <= 1) return array;
+    
     const animations = [];
     const auxiliaryArray = array.slice();
     quickSortHelper(auxiliaryArray, 0, auxiliaryArray.length - 1, animations);
@@ -9,14 +12,12 @@ export function quickSort(array) {
 
 async function quickSortHelper(array, left, right, animations) {
     if (left >= right) return;
-    const index = partition(array, left, right, animations);
 
+    const index = partition(array, left, right, animations);
     await Promise.all([
         quickSortHelper(array, left, index - 1, animations),
         quickSortHelper(array, index + 1, right, animations)
     ])
-    
-    
 }
 
 function partition(array, left, right, animations) {
@@ -26,11 +27,9 @@ function partition(array, left, right, animations) {
     for (let i = left; i < right; i++) {
         animations.push([index, i, 'color']);
         animations.push([index, i, 'revert']);
-
         if (array[i] <= pivot) {
             animations.push([index, i, 'swap']);
             swap(array, i, index)
-            // [array[index], array[i]] = [array[i], array[index]];
             index++;
         }
     }
@@ -38,14 +37,8 @@ function partition(array, left, right, animations) {
     animations.push([index, right]);
     animations.push([index, right]);
     animations.push([index, right]);
-
+    
     swap(array, index, right)
-    // [array[index], array[right]] = [array[right], array[index]];
-    return index;
-}
 
-export function swap(array, a, b) {
-    let temp = array[a];
-    array[a] = array[b];
-    array[b] = temp;
+    return index;
 }
