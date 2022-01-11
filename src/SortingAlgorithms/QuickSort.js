@@ -29,7 +29,8 @@ function partition(array, left, right, animations) {
 
         if (array[i] <= pivot) {
             animations.push([index, i, 'swap']);
-            [array[index], array[i]] = [array[i], array[index]];
+            swap(array, i, index)
+            // [array[index], array[i]] = [array[i], array[index]];
             index++;
         }
     }
@@ -38,6 +39,13 @@ function partition(array, left, right, animations) {
     animations.push([index, right]);
     animations.push([index, right]);
 
-    [array[index], array[right]] = [array[right], array[index]];
+    swap(array, index, right)
+    // [array[index], array[right]] = [array[right], array[index]];
     return index;
+}
+
+export function swap(array, a, b) {
+    let temp = array[a];
+    array[a] = array[b];
+    array[b] = temp;
 }

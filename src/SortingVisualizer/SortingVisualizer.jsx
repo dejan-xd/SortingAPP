@@ -1,15 +1,16 @@
 import React from 'react';
-import {mergeSort} from '../SortingAlgorithms/MergeSort.js';
-import { quickSort } from '../SortingAlgorithms/QuickSort.js';
+import { mergeSort } from '../SortingAlgorithms/MergeSort.js';
+import { quickSort, swap } from '../SortingAlgorithms/QuickSort.js';
 import './SortingVisualizer.css';
 
 const ANIMATION_SPEED_MS = 1;   // speed of the animation
 const NUMBER_OF_ARRAY_BARS = window.innerWidth / 4 - 50;   // number of bars (values) in the array
 const HEIGHT_OF_ARRAY_BARS = window.innerHeight - 150;    // height of bars (values) in the array
 const COLORS = {
-  INITIAL: 'LightSteelBlue',
-  PROCESSING: 'Red',
-  PROCESSED: 'LightGreen'
+  INITIAL: 'SkyBlue',
+  PROCESSING: 'Yellow',
+  FINISHED: 'LightGreen',
+  CHECKING: 'Red'
 }
 
 export default class SortingVisualizer extends React.Component {
@@ -29,22 +30,21 @@ export default class SortingVisualizer extends React.Component {
 	resetArray() {
     if (this.isSorting) return
 
-		const array = [];
-    const arrayBars = document.getElementsByClassName('array-bar');
+    arrayBarColoring('array-bar', COLORS.INITIAL)
 
-    for(var i = 0; i < arrayBars.length; i++){
-      arrayBars[i].style.backgroundColor = COLORS.INITIAL;
-    }
-
-		for (let i = 0; i < NUMBER_OF_ARRAY_BARS; i++) {
+    const array = [];
+		for (let i = 0; i < NUMBER_OF_ARRAY_BARS - 1; i++) {
 			array.push(randomIntFromInterval(5, HEIGHT_OF_ARRAY_BARS));
 		}
+    array.push(HEIGHT_OF_ARRAY_BARS);
+    shuffle(array);
 		this.setState({array});
 	}
 
   mergeSort() {
     if (this.isSorting) return
 
+    arrayBarColoring('array-bar', COLORS.INITIAL)
     this.isSorting = true;
     const animations = mergeSort(this.state.array);
 
@@ -56,7 +56,7 @@ export default class SortingVisualizer extends React.Component {
         const [barOneIdx, barTwoIdx] = animations[i]; 
         const barOneStyle = arrayBars[barOneIdx].style;
         const barTwoStyle = arrayBars[barTwoIdx].style;
-        const color = i % 3 === 0 ? COLORS.PROCESSING : COLORS.PROCESSED;
+        const color = i % 3 === 0 ? COLORS.CHECKING : COLORS.PROCESSING;
 
         setTimeout(() => {
           barOneStyle.backgroundColor = color;
@@ -73,9 +73,11 @@ export default class SortingVisualizer extends React.Component {
 
     setTimeout(() => {
       this.isSorting = false;
+      arrayBarColoring('array-bar', COLORS.FINISHED)
     }, (animations.length + 1) * ANIMATION_SPEED_MS);
 
     // TODO add pop up window with a notification
+    // TODO check if list is already sorted
     // const javaScriptSortedArray = this.state.array.slice().sort((a, b) => a - b);
     // const sortedArray = this.state.array;
     // console.log(arraysAreEqual(javaScriptSortedArray, sortedArray));
@@ -84,6 +86,7 @@ export default class SortingVisualizer extends React.Component {
   quickSort() {
     if (this.isSorting) return
 
+    arrayBarColoring('array-bar', COLORS.INITIAL)
     this.isSorting = true;
     const [animations, array] = quickSort(this.state.array);
 
@@ -116,6 +119,7 @@ export default class SortingVisualizer extends React.Component {
 
     setTimeout(() => {
       this.isSorting = false;
+      arrayBarColoring('array-bar', COLORS.FINISHED)
       this.setState({array});
     }, (animations.length + 1) * ANIMATION_SPEED_MS);
   }
@@ -131,7 +135,7 @@ export default class SortingVisualizer extends React.Component {
 				{array.map((value, idx) => (
 					<div className='array-bar' key={idx} style={{backgroundColor: COLORS.INITIAL, height: `${value}px`}}></div>
 				))}
-        <div>
+        <div className='btn-container'>
           <button className='btn btn-gray' onClick={() => this.resetArray()}>Generate New Array</button>
           <button className='btn btn-gray' onClick={() => this.mergeSort()}>Merge Sort</button>
           <button className='btn btn-gray' onClick={() => this.quickSort()}>Quick Sort</button>
@@ -145,6 +149,26 @@ export default class SortingVisualizer extends React.Component {
 
 function randomIntFromInterval(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function arrayBarColoring(className, color) {
+  const arrayBars = document.getElementsByClassName(className);
+
+  for(var i = 0; i < arrayBars.length; i++){
+    arrayBars[i].style.backgroundColor = color;
+  }
+}
+
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex;
+
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    swap(array, currentIndex, randomIndex);
+  }
+  return array;
 }
 
 // function arraysAreEqual(firstArray, secondArray) {
