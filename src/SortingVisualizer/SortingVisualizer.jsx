@@ -1,6 +1,7 @@
 import React from 'react';
 import { mergeSort } from '../SortingAlgorithms/MergeSort.js';
 import { quickSort } from '../SortingAlgorithms/QuickSort.js';
+import { heapSort } from '../SortingAlgorithms/HeapSort.js';
 import { randomIntFromInterval, arrayBarColoring, shuffle } from '../Utils/Utils.js';
 
 import './SortingVisualizer.css';
@@ -124,7 +125,46 @@ export default class SortingVisualizer extends React.Component {
     }, (animations.length + 1) * ANIMATION_SPEED_MS);
   }
 
-  heapSort() {}   // TODO
+  heapSort() {
+    if (this.isSorting) return
+
+    arrayBarColoring('array-bar', COLORS.INITIAL)
+    this.isSorting = true;
+    const [animations, array] = heapSort(this.state.array);
+
+    for (let i = 0; i < animations.length; i++) {
+      const arrayBars = document.getElementsByClassName('array-bar');
+      const [barOneIdx, barTwoIdx] = animations[i]; 
+      const barOneStyle = arrayBars[barOneIdx].style;
+      const barTwoStyle = arrayBars[barTwoIdx].style;
+
+      if (animations[i][2] === 'checking') {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.CHECKING;
+          barTwoStyle.backgroundColor = COLORS.CHECKING;
+        }, i * ANIMATION_SPEED_MS);
+      } else if (animations[i][2] === 'processing') {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.PROCESSING;
+          barTwoStyle.backgroundColor = COLORS.PROCESSING;
+          const tempHeight = barOneStyle.height;
+          barOneStyle.height = barTwoStyle.height;
+          barTwoStyle.height = tempHeight;
+        }, i * ANIMATION_SPEED_MS);
+      } else {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.FINISHED;
+          barTwoStyle.backgroundColor = COLORS.FINISHED;
+        }, i * ANIMATION_SPEED_MS);
+      }
+    }
+    setTimeout(() => {
+      this.isSorting = false;
+      arrayBarColoring('array-bar', COLORS.FINISHED)
+      this.setState({array});
+    }, (animations.length + 1) * ANIMATION_SPEED_MS);
+  }
+
   bubbleSort() {}   // TODO
 
 	render() {
