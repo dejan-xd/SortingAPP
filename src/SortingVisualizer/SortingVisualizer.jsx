@@ -2,6 +2,7 @@ import React from 'react';
 import { mergeSort } from '../SortingAlgorithms/MergeSort.js';
 import { quickSort } from '../SortingAlgorithms/QuickSort.js';
 import { heapSort } from '../SortingAlgorithms/HeapSort.js';
+import { bubbleSort } from '../SortingAlgorithms/BubbleSort.js';
 import { randomIntFromInterval, arrayBarColoring, shuffle } from '../Utils/Utils.js';
 
 import './SortingVisualizer.css';
@@ -165,7 +166,45 @@ export default class SortingVisualizer extends React.Component {
     }, (animations.length + 1) * ANIMATION_SPEED_MS);
   }
 
-  bubbleSort() {}   // TODO
+  bubbleSort() {
+    if (this.isSorting) return
+
+    arrayBarColoring('array-bar', COLORS.INITIAL)
+    this.isSorting = true;
+    const [animations, array] = bubbleSort(this.state.array);
+
+    for (let i = 0; i < animations.length; i++) {
+      const arrayBars = document.getElementsByClassName('array-bar');
+      const [barOneIdx, barTwoIdx] = animations[i]; 
+      const barOneStyle = arrayBars[barOneIdx].style;
+      const barTwoStyle = arrayBars[barTwoIdx].style;
+
+      if (animations[i][2] === 'passing') {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.PROCESSING;
+          barTwoStyle.backgroundColor = COLORS.CHECKING;
+        }, i * ANIMATION_SPEED_MS);
+      } else if (animations[i][2] === 'swap') {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.PROCESSING;
+          barTwoStyle.backgroundColor = COLORS.CHECKING;
+          const tempHeight = barOneStyle.height;
+          barOneStyle.height = barTwoStyle.height;
+          barTwoStyle.height = tempHeight;
+        }, i * ANIMATION_SPEED_MS);
+      } else {
+        setTimeout(() => {
+          barOneStyle.backgroundColor = COLORS.PROCESSING;
+          barTwoStyle.backgroundColor = COLORS.PROCESSING;
+        }, i * ANIMATION_SPEED_MS);
+      }
+    }
+    setTimeout(() => {
+      this.isSorting = false;
+      arrayBarColoring('array-bar', COLORS.FINISHED)
+      this.setState({array});
+    }, (animations.length + 1) * ANIMATION_SPEED_MS);
+  }
 
 	render() {
 		const {array} = this.state;
