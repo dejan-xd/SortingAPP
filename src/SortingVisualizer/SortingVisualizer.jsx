@@ -52,10 +52,6 @@ export default class SortingVisualizer extends React.Component {
 	}
 
   mergeSort() {
-    if (this.isSorting) return
-
-    arrayBarColoring('array-bar', COLORS.INITIAL)
-    this.isSorting = true;
     const animations = mergeSort(this.state.array);
 
     for (let i = 0; i < animations.length; i++) {
@@ -78,18 +74,11 @@ export default class SortingVisualizer extends React.Component {
         }, i * ANIMATION_SPEED_MS);
       }
     }
-
-    setTimeout(() => {
-      this.isSorting = false;
-      arrayBarColoring('array-bar', COLORS.FINISHED)
-    }, (animations.length + 1) * ANIMATION_SPEED_MS);
+    
+    return [animations, this.state.array];
   }
 
   quickSort() {
-    if (this.isSorting) return
-
-    arrayBarColoring('array-bar', COLORS.INITIAL)
-    this.isSorting = true;
     const [animations, array] = quickSort(this.state.array);
 
     for (let i = 0; i < animations.length; i++) {
@@ -119,18 +108,10 @@ export default class SortingVisualizer extends React.Component {
       }
     }
 
-    setTimeout(() => {
-      this.isSorting = false;
-      arrayBarColoring('array-bar', COLORS.FINISHED)
-      this.setState({array});
-    }, (animations.length + 1) * ANIMATION_SPEED_MS);
+    return [animations, array];
   }
 
   heapSort() {
-    if (this.isSorting) return
-
-    arrayBarColoring('array-bar', COLORS.INITIAL)
-    this.isSorting = true;
     const [animations, array] = heapSort(this.state.array);
 
     for (let i = 0; i < animations.length; i++) {
@@ -159,18 +140,11 @@ export default class SortingVisualizer extends React.Component {
         }, i * ANIMATION_SPEED_MS);
       }
     }
-    setTimeout(() => {
-      this.isSorting = false;
-      arrayBarColoring('array-bar', COLORS.FINISHED)
-      this.setState({array});
-    }, (animations.length + 1) * ANIMATION_SPEED_MS);
+
+    return [animations, array];
   }
 
   bubbleSort() {
-    if (this.isSorting) return
-
-    arrayBarColoring('array-bar', COLORS.INITIAL)
-    this.isSorting = true;
     const [animations, array] = bubbleSort(this.state.array);
 
     for (let i = 0; i < animations.length; i++) {
@@ -199,6 +173,32 @@ export default class SortingVisualizer extends React.Component {
         }, i * ANIMATION_SPEED_MS);
       }
     }
+
+    return [animations, array];
+  }
+
+  sortingAlgorithms(algorithm){
+    if (this.isSorting) return;
+
+    arrayBarColoring('array-bar', COLORS.INITIAL);
+    this.isSorting = true;
+    let array = [], animations = [];
+
+    switch(algorithm) {
+      case 'merge':
+        [animations, array] = this.mergeSort();
+        break;
+      case 'quick':
+        [animations, array] = this.quickSort();
+        break;
+      case 'heap':
+        [animations, array] = this.heapSort();
+        break;
+      case 'bubble':
+        [animations, array] = this.bubbleSort();
+        break;
+    }
+
     setTimeout(() => {
       this.isSorting = false;
       arrayBarColoring('array-bar', COLORS.FINISHED)
@@ -216,10 +216,10 @@ export default class SortingVisualizer extends React.Component {
 				))}
         <div className='btn-container'>
           <button className='btn btn-gray' onClick={() => this.resetArray()}>Generate New Array</button>
-          <button className='btn btn-gray' onClick={() => this.mergeSort()}>Merge Sort</button>
-          <button className='btn btn-gray' onClick={() => this.quickSort()}>Quick Sort</button>
-          <button className='btn btn-gray' onClick={() => this.heapSort()}>Heap Sort</button>
-          <button className='btn btn-gray' onClick={() => this.bubbleSort()}>Bubble Sort</button>
+          <button className='btn btn-gray' onClick={() => this.sortingAlgorithms('merge')}>Merge Sort</button>
+          <button className='btn btn-gray' onClick={() => this.sortingAlgorithms('quick')}>Quick Sort</button>
+          <button className='btn btn-gray' onClick={() => this.sortingAlgorithms('heap')}>Heap Sort</button>
+          <button className='btn btn-gray' onClick={() => this.sortingAlgorithms('bubble')}>Bubble Sort</button>
         </div>
 			</div>
 		);
